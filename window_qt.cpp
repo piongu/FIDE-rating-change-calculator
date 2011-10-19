@@ -1,12 +1,13 @@
 #include "window_qt.hpp"
-#include <math.h>
-#include <cstdio>
+#include <math.h> //to use fabs function
+#include <cstdio> //to use sprintf function
 
 float expected (int diff)
 {
 	int tab[43]={392,375,358,345,327,316,303,291,279,268,257,246,236,226,
 		216,207,198,189,180,171,163,154,146,138,130,122,114,107,99,92,84,77,69,62,54,47,40,33,26,18,11,4,0};
-
+        //values of rating difference intervals
+        //curiously enough rating change is calculated according to table, not mathematical formula (which is only an approximation)
 	int exp = 92;
 	int i = 0;
 
@@ -17,13 +18,14 @@ float expected (int diff)
 	}
 
 	if(diff>0)
-		return exp/100.0;
+		return exp/100.0;//100.0 in order to force returning float
 	else
 		return 1-exp/100.0;
 }
 
 void Window::calc()
 {	
+        //data collection
 	int diff = 0;
 	int k=0;
 	float score = -1;
@@ -35,6 +37,7 @@ void Window::calc()
 	else if(k_radio[1]->isChecked()) k = 15;
 	else k = 30;
 
+        //calculating rating change
 	diff = (slider->value() - slider2->value());
 	if(fabs(diff)>400)
 	{
@@ -43,14 +46,17 @@ void Window::calc()
 	}
 	change = (score - expected(diff))*k;
 	//std::cout<< "your change is:" << change << std::endl;
+        //showing result in new window as a pushbutton
 	char ch[512];
 	sprintf(ch, "%.2f", change);
-	QLabel *label = new QLabel(ch);
-	label->show();
+	QPushButton *result = new QPushButton(ch);
+	QObject::connect(result, SIGNAL(clicked()), 
+                        result, SLOT(close()));
+	result->show();
 }
 Window::Window()
 {
-	setWindowTitle("rating change calculator (ELO system)");
+        setWindowTitle("rating change calculator (ELO system) by piongu - version 1.0");
 	//enter ratings section
 	spinBox = new QSpinBox(this);
 	spinBox2 = new QSpinBox(this);
@@ -60,6 +66,7 @@ Window::Window()
 	exit_button = new QPushButton("quit");
 	label = new QLabel("your rating:");
 	label2 = new QLabel("opponent's rating:");
+        source = new QLabel("source: https://github.com/piongu");
 	//setting range of spinBoxes plus sliders
 	spinBox->setRange(1000, 2900);
 	slider->setRange(1000, 2900);
@@ -132,35 +139,14 @@ Window::Window()
 	main_layout->addLayout(radioslayout);
 	main_layout->addWidget(calc_button);
 	main_layout->addWidget(exit_button);
+        main_layout->addWidget(source);
 
 	setLayout(main_layout);
 	show();
 }
 Window::~Window() 
 {
-	delete outcome_label;
-	delete outcome_radio[0];
-	delete outcome_radio[1];
-	delete outcome_radio[2];
-	delete outcome_layout;
-	delete outcome_host;
-
-	delete k_label;
-	delete k_radio[0];
-	delete k_radio[1];
-	delete k_radio[2];
-	delete k_layout;
-	delete k_host;
-
-	delete radioslayout;
-	delete label;
-	delete label2;
-	delete slider;
-	delete slider2;
-	delete spinBox;
-	delete spinBox2;
-	delete ratings_layout;
-	delete calc_button;
-	delete exit_button;
-	delete main_layout;
+        //I leave this empty on purpose
+        //according to my current knowledge in Qt allocated memory is freed when you close the window
+        //in some way it's similiar to so called Garbage Collector used in Java language
 }

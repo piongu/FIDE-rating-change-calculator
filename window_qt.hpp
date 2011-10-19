@@ -31,6 +31,8 @@ class Window : public QWidget
 	//PushButtons to calculate Elo change or to exit the program
 	QPushButton *calc_button;
 	QPushButton *exit_button;
+
+        QLabel *source; //link to code of this program
 	
 	//RadioButtons' section with label in one layout to choose result and 'k'
 	QHBoxLayout *radioslayout; //one layout to keep two radios sections
